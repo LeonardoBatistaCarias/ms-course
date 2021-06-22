@@ -3,6 +3,7 @@ package com.leonardobatistacarias.hrpayroll.service.impl;
 import com.leonardobatistacarias.hrpayroll.dto.request.PaymentRequest;
 import com.leonardobatistacarias.hrpayroll.dto.response.PaymentResponse;
 import com.leonardobatistacarias.hrpayroll.dto.response.WorkerResponse;
+import com.leonardobatistacarias.hrpayroll.feignclient.WorkerClient;
 import com.leonardobatistacarias.hrpayroll.service.PaymentService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,10 @@ import java.util.HashMap;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-    @Value("${hr-worker.host}")
-    private String workerHost;
+    private final WorkerClient workerClient;
 
-    private final RestTemplate restTemplate;
-
-    public PaymentServiceImpl(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public PaymentServiceImpl(WorkerClient workerClient) {
+        this.workerClient = workerClient;
     }
 
     @Override
@@ -29,10 +27,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private WorkerResponse findWorkerById(Long workerId) {
-        var uriVariable = new HashMap<String, String>();
-        uriVariable.put("id", String.valueOf(workerId));
-        var worker = restTemplate.getForObject(workerHost + "/workers/{id}", WorkerResponse.class, uriVariable);
-
+        var worker = workerClient.findById(workerId).getBody();
         return worker;
     }
 }
