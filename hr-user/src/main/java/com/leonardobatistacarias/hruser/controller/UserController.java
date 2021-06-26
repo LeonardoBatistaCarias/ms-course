@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<User> findById(@RequestParam String email) {
+    public ResponseEntity<User> findByEmail(@RequestParam String email) {
         var response = repository.findByEmail(email);
         return ResponseEntity.ok().body(response);
     }
